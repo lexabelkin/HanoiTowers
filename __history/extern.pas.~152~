@@ -1,0 +1,71 @@
+unit extern;
+
+interface
+uses
+  Classes,
+  SysUtils,StrUtils, Vcl.StdCtrls, Vcl.Controls, Vcl.ExtCtrls,
+   Vcl.ImgList, Vcl.Graphics, System.Types;
+
+type
+  TShapeDragObject = class(TDragObject)
+  private
+    FShape: TShape;
+    FDragImage: TBitmap;
+  public
+
+
+  end;
+
+procedure HanoiTowersIterative(textelem: TMemo; n, i, k: Integer);
+procedure hanoi_any(textelem:TMemo; n,i,k:integer);
+
+
+
+
+implementation
+
+procedure HanoiTowersIterative(textelem: TMemo; n, i, k: Integer);
+var
+  from, to_, aux: Integer;
+  j: Integer;
+begin
+  from := i;
+  to_ := k;
+  aux := 6 - from - to_;
+
+  for j := n downto 1 do
+  begin
+    if (j mod 2) = 1 then
+    begin
+      // Нечетный диск
+      textelem.Lines.Add(Format('Move disk %d from pin %d to %d', [j, from, to_]));
+      from := 6 - from - to_; // Вычисляем следующую "с" (вспомогательную) булавку
+      to_ := 6 - from - aux;
+    end
+    else
+    begin
+      // Четный диск
+      textelem.Lines.Add(Format('Move disk %d from pin %d to %d', [j, from, aux]));
+      from := 6 - from - aux; // Вычисляем следующую "с" (вспомогательную) булавку
+      aux := 6 - from - to_;
+    end;
+  end;
+end;
+
+
+procedure hanoi_any(textelem:TMemo;n,i,k:integer);
+begin
+  if n = 1 then textelem.lines.Add(Format('Move disk 1 from pin %d to %d',[i,k]))
+  else
+  begin
+    var tmp:integer :=3-i-k;
+
+    hanoi_any(textelem, n-1, i, tmp);
+
+    textelem.lines.Add(Format('Move disk %d from pin %d to %d',[n,i,k]));
+    hanoi_any(textelem, n-1, tmp, k);
+    end;
+end;
+
+
+end.

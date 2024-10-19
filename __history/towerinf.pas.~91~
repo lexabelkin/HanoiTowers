@@ -1,0 +1,40 @@
+unit towerinf;
+
+interface
+  uses Vcl.Graphics, Vcl.ExtCtrls,System.Classes;
+
+Type
+Tower = class(TShape)
+public
+  id:integer;
+  constructor Create(AOwner: TComponent;x,y,height,wigth:integer;clr:Vcl.Graphics.TColor);
+
+
+
+private
+  color:Vcl.Graphics.TColor;
+  num:integer;
+
+
+end;
+
+
+
+implementation
+
+    constructor Tower.Create(AOwner: TComponent;x,y,height,wigth:integer;clr:Vcl.Graphics.TColor);
+    begin
+       self.left:=x;
+       self.top:=y;
+       self.height:=height;
+       self.width:=width;
+
+       self.num:=id;
+       self.brush.Color:=clr;
+
+
+    end;
+
+
+end.
+

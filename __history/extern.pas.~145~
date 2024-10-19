@@ -1,0 +1,41 @@
+unit extern;
+
+interface
+uses
+  Classes,
+  SysUtils,StrUtils, Vcl.StdCtrls, Vcl.Controls, Vcl.ExtCtrls,
+   Vcl.ImgList, Vcl.Graphics, System.Types;
+
+type
+  TShapeDragObject = class(TDragObject)
+  private
+    FShape: TShape;
+    FDragImage: TBitmap;
+  public
+
+
+  end;
+
+
+procedure hanoi_any(textelem:TMemo; i,k:integer);
+
+
+
+
+implementation
+
+
+procedure hanoi_any(textelem:TMemo;i,k:integer);
+begin
+
+    var tmp:integer :=6-i-k;
+
+    hanoi_any(textelem,  i, tmp);
+
+    textelem.lines.Add(Format('Move disk  from pin %d to %d',[i,k]));
+    hanoi_any(textelem,  tmp, k);
+
+end;
+
+
+end.

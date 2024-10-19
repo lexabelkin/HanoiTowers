@@ -1,0 +1,41 @@
+unit LevelDialog;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Buttons, Vcl.Imaging.pngimage,
+  Vcl.ExtCtrls, vcl.StdCtrls;
+
+type
+  TNextLevelDialog = class(TForm)
+    Image1: TImage;
+    SpeedButton1: TSpeedButton;
+
+    procedure Init(memo:TMemo);
+    procedure SpeedButton1Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  NextLevelDialog: TNextLevelDialog;
+  memo:TMemo;
+implementation
+
+{$R *.dfm}
+
+procedure TNextLevelDialog.Init(memo:TMemo);
+begin
+  memo:=memo;
+end;
+
+procedure TNextLevelDialog.SpeedButton1Click(Sender: TObject);
+begin
+  memo.Lines.Add('next level');
+  NextLevelDialog.closemodal();
+end;
+
+end.

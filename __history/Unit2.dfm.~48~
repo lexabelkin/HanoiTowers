@@ -1,0 +1,54 @@
+object Form2: TForm2
+  Left = 0
+  Top = 0
+  Caption = 'Hanoi Towers'
+  ClientHeight = 567
+  ClientWidth = 908
+  Color = clBtnFace
+  DoubleBuffered = True
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  Position = poDesktopCenter
+  TextHeight = 13
+  object Shape1: TShape
+    Left = 248
+    Top = 144
+    Width = 49
+    Height = 369
+    Shape = stRoundRect
+  end
+  object Shape2: TShape
+    Left = 440
+    Top = 144
+    Width = 17
+    Height = 369
+    Shape = stRoundRect
+  end
+  object Shape3: TShape
+    Left = 592
+    Top = 144
+    Width = 17
+    Height = 369
+    Shape = stRoundRect
+  end
+  object btnStart: TButton
+    Left = 24
+    Top = 24
+    Width = 75
+    Height = 25
+    Caption = 'Start'
+    TabOrder = 0
+    OnClick = btnStartClick
+  end
+  object btnReset: TButton
+    Left = 24
+    Top = 64
+    Width = 75
+    Height = 25
+    Caption = 'Reset'
+    TabOrder = 1
+  end
+end

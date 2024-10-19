@@ -1,0 +1,77 @@
+unit Unit2;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, boardForm;
+
+type
+  TForm2 = class(TForm)
+    btnStart: TButton;
+    btnReset: TButton;
+    Shape1: TShape;
+    Shape2: TShape;
+    Shape3: TShape;
+    procedure Shape4MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Shape4MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
+    procedure Shape4MouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure btnStartClick(Sender: TObject);
+
+  private
+    { Private declarations }
+
+  public
+    { Public declarations }
+  end;
+var
+  Form2: TForm2;
+  f:boolean;
+  mX,mY:integer;
+
+implementation
+
+{$R *.dfm}
+
+
+
+procedure TForm2.btnStartClick(Sender: TObject);
+begin
+var board:boardform.TBoard;
+   board.boardcreate(0);
+   board.Show();
+end;
+
+procedure TForm2.Shape4MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+
+f:=true;
+mx:=X;
+my:=Y;
+
+end;
+
+procedure TForm2.Shape4MouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+//if f then {если можно двигать, то двигаем}
+//if Shape4.Top>Shape1.Top then  Shape4.Top:=Shape4.Top-(mY-Y)
+//else
+// begin
+//  Shape4.Left:=Shape4.Left-(mX-X);
+//  Shape4.Top:=Shape4.Top-(mY-Y);
+
+end;
+
+procedure TForm2.Shape4MouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+f:=false;
+end;
+
+end.
+end.

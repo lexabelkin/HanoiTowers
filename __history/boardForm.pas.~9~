@@ -1,0 +1,52 @@
+unit boardForm;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, towerinf;
+
+type
+  TBoard = class(TForm)
+public
+  procedure BoardCreate(custom:integer{;discarr:array of Disc;towarr:array of Tower});
+
+private
+//  oldpos:integer;
+//  newpos:integer;
+//  discs:array of Disc;
+  towers:array of TTower;
+
+end;
+  var
+  Board: TBoard;
+
+
+implementation
+    procedure TBoard.BoardCreate(custom:integer{;discarr:array of Disc;towarr:array of Tower});
+    begin
+
+      SetLength(self.towers, 3);
+      for var i := 0 to 2 do
+      begin
+        self.towers[i]:=TTower.Create(self,('tower'+inttostr(i)),280+i*30,140,100,10,clMaroon);
+
+
+      end;
+
+//      if custom <> 0 then
+//      begin
+//        SetLength(self.discs, custom);
+//        for var i := 0 to custom do
+//          self.discs[i] := discarr[i];
+//      end
+
+//        SetLength(self.discs, Length(discarr));
+//        for var i := 0 to High(discarr) do
+//          self.discs[i] := discarr[i];
+
+
+    end;
+
+
+end.

@@ -1,0 +1,120 @@
+unit discinf;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, System.Generics.Collections, System.Types, extern;
+
+type
+  TDisc = class(TShape)
+  public
+     num:integer;
+    constructor Create(AOwner: TComponent); override;
+    
+    class function GenerateDisksList(CurrTower:TObject;NumDisks: Integer; Parent: TWinControl;
+     Left, Top, Width, Height,defaultHeight : Integer): TStack<TDisc>;
+
+    function getCurrTower():TObject;
+    procedure setCurrTower(shape:TObject);
+
+  private
+    currTower : TObject;
+
+
+  end;
+
+implementation
+
+{ TDisc }
+
+constructor TDisc.Create(AOwner: TComponent);
+begin
+  inherited Create(AOwner);
+end;
+
+
+class function TDisc.GenerateDisksList(currTower:TObject;NumDisks: Integer; Parent: TWinControl;
+ Left, Top, Width, Height, defaultHeight: Integer): TStack<TDisc>;
+var
+  I: Integer;
+  Disk: TDisc;
+  R, G, B: Byte;
+  DiskWidth: Integer;
+  DiskTop: Integer;
+  DiskScale: Single;
+begin
+  Result := TStack<TDisc>.Create;
+  DiskScale := 0.5 / NumDisks;
+  width:=15;
+  for I := NumDisks downto 1 do
+  begin
+    Disk := TDisc.Create(Parent);
+    Disk.Parent := Parent;
+//    Disk.OnMouseDown := Disk.DiscMouseDown;
+//    Disk.OnMouseMove := Disk.DiscMouseMove;
+//    Disk.OnMouseUp := Disk.DiscMouseUp;
+
+    // Случайный цвет диска
+    R := Random(256);
+    G := Random(256);
+    B := Random(256);
+    Disk.Brush.Color := RGB(R, G, B);
+    Disk.Pen.Color := clBlack;
+    Disk.Pen.Width := 4;
+    Disk.Shape := stRoundRect;
+
+
+    disk.DragMode:= dmAutomatic;
+    disk.DragKind := dkDrag;
+
+
+
+    DiskWidth := Round(sqrt(NumDisks) * Width * 24 * (sqrt(I) * DiskScale));
+
+
+    Disk.Width := DiskWidth;
+    disk.Height := defaultHeight;
+    if defaultHeight=0 then
+    begin
+
+      Disk.Height:= round(400/numdisks);
+      //DiskWidth := Round(NumDisks * Width * 4 * (sqrt(I) * DiskScale));
+      Disk.Pen.Width := 3;
+      if numdisks>20 then Disk.Pen.Width := 2;
+      if numdisks>30 then Disk.Pen.Width := 1;
+    end;
+
+
+    if  Screen.Width = 1920 then
+    
+    Disk.Left := Left + (Width - DiskWidth) div 2;
+    disk.Left := Left + (250 - disk.Width) div 2;
+
+
+    DiskTop := Top + Height - (NumDisks - I + 1) * Disk.Height;
+    Disk.Top := DiskTop;
+    disk.currTower := currTower;
+    disk.num := I;
+
+    Result.push(Disk);
+  end;
+end;
+
+
+function TDisc.getCurrTower():TObject;
+begin
+  result:=self.currTower;
+end;
+
+procedure TDisc.setCurrTower(shape:TObject);
+begin
+  self.currTower:=shape
+end;
+
+
+
+
+
+end.
+

@@ -1,0 +1,13 @@
+unit disc;
+
+interface
+
+Type
+disc = class
+
+implementation
+
+
+
+end;
+

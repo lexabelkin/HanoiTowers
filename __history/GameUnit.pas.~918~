@@ -1,0 +1,384 @@
+unit GameUnit;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, TowerImageClass, Vcl.StdCtrls,
+  Vcl.Imaging.jpeg, Vcl.ExtCtrls, Vcl.Imaging.pngimage, Vcl.Buttons,
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdTime,
+  Vcl.WinXPickers,System.StrUtils, inifiles, system.Generics.Collections,system.UITypes;
+
+type
+  TGameBoard = class(TForm)
+    BugFixingImage: TImage;
+    BugFixingLabel: TLabel;
+    BugFixingSpeedButton: TSpeedButton;
+    BugFixingTimer: TTimer;
+    BugFixingMemo: TMemo;
+    MaxTimeLabel: TLabel;
+    Label2: TLabel;
+    BestStepsLabel: TLabel;
+    Label1: TLabel;
+    BitShowLogBtn: TBitBtn;
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormShow(Sender: TObject);
+    procedure BitShowLogBtnClick(Sender: TObject);
+  published
+    Image1: TImage;
+    StepsLabel: TLabel;
+    Memo1: TMemo;
+    MainMenuButton: TSpeedButton;
+    PauseButton: TSpeedButton;
+    ReloadButton: TSpeedButton;
+    TimeLabel: TLabel;
+    Timer1: TTimer;
+    LevelLabel: TLabel;
+    BestTimeLabel: TLabel;
+public    class var  settingsFile:string;
+
+published
+ procedure FormCreate(Sender: TObject);
+    procedure MainMenuButtonClick(Sender: TObject);
+    procedure Reset();
+    procedure ReloadButtonClick(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure BlockGame();
+    procedure UnblockGame();
+    procedure nextLevel();
+    procedure SaveSettingsToFile(mode:integer);
+    procedure LoadSettingsFromFile();
+
+    class procedure setcurrLevel(lvl:integer);
+    class function getcurrLevel():integer;
+    class function getTime():string;
+    procedure Memo1Change(Sender: TObject);
+    procedure PauseButtonClick(Sender: TObject);
+    procedure BoardCreate(custom:integer);
+  private
+    towers:array of TTower;
+    level:integer;
+    gameStatus:boolean;
+    bestLevels: system.Generics.Collections.TDictionary<string,string>;
+    BestSteps: system.Generics.Collections.TDictionary<string,string> ;
+
+
+  end;
+
+var
+  GameBoard: TGameBoard;
+  FilePath :string;
+implementation
+
+ {$R *.dfm}
+
+procedure TGameBoard.SaveSettingsToFile(mode:integer);
+var
+  IniFile: TIniFile;
+begin
+  IniFile := TIniFile.Create(self.settingsFile);
+
+
+  for var i := 2 to 7 do
+  begin
+    if mode = 0 then
+    begin
+       IniFile.WriteString('BestLevels', inttostr(i),'0:00');
+       IniFile.WriteString('BestSteps', inttostr(i),'0');
+    end
+
+    else
+    begin
+       IniFile.WriteString('BestLevels', inttostr(i),self.bestLevels[inttostr(i)]);
+       IniFile.WriteString('BestSteps', inttostr(i),self.BestSteps[inttostr(i)]);
+    end;
+
+  end;
+  inifile.Free();
+
+end;
+
+
+
+procedure TGameBoard.LoadSettingsFromFile();
+var
+  IniFile: TIniFile;
+begin
+ IniFile := TIniFile.Create(TGameBoard.settingsFile);
+
+  for var i := 2 to 7 do
+  begin
+     var value1:string:=IniFile.ReadString('BestLevels', inttostr(i),'0:00');
+     var value2:string:=IniFile.ReadString('BestSteps', inttostr(i),'0');
+
+     self.bestLevels.Add(inttostr(i),value1);
+     self.BestSteps.Add(inttostr(i),value2);
+  end;
+   IniFile.Free;
+
+end;
+
+
+
+
+  class procedure TGameBoard.setcurrLevel(lvl:integer);
+  begin
+     gameboard.level:=  lvl;
+  end;
+
+  class function TGameBoard.getcurrLevel():integer;
+  begin
+     result:=gameboard.level;
+  end;
+
+  class function TGameBoard.getTime():string;
+  begin
+    case gameboard.level of
+       2:result:='0:15';
+       3:result:='0:20';
+       4:result:='1:00';
+       5:result:='2:30';
+       6:result:='4:00';
+       7:result:='7:00';
+    end;
+  end;
+
+
+  procedure TGameBoard.nextLevel();
+  begin
+      self.setcurrLevel(self.getcurrLevel+1);
+      self.Reset();
+      self.BoardCreate(0);
+
+  end;
+
+
+
+
+procedure TGameBoard.PauseButtonClick(Sender: TObject);
+begin
+if self.gameStatus=true then
+  begin
+     self.BlockGame() ;
+     self.Image1.Picture.LoadFromFile(filepath+'GameRoomDarkened.jpg')
+  end
+
+else
+  begin
+      self.UnblockGame();
+      self.Image1.Picture.LoadFromFile(filepath+'GameRoom.jpg');
+  end;
+
+end;
+
+procedure TGameBoard.BitShowLogBtnClick(Sender: TObject);
+begin
+if memo1.Visible=True then
+  begin
+     memo1.Visible:=false;
+     BitShowLogBtn.Glyph.LoadFromFile(filepath+'arrow_right.bmp');
+  end
+
+else
+  begin
+     memo1.Visible:=true;
+     BitShowLogBtn.Glyph.LoadFromFile(filepath+'arrow_down.bmp');
+  end;
+end;
+
+
+procedure TGameBoard.BlockGame();
+  begin
+    timer1.Enabled:=false;
+    self.gameStatus:=false;
+   for var i := 0 to 2 do
+    begin
+    try
+      self.towers[i].GetDiscs.peek.DragMode:=dmManual;
+    except end;
+    end;
+
+  end;
+
+  procedure TGameBoard.UnblockGame();
+  begin
+    timer1.Enabled:=true;
+    self.gameStatus:=True;
+   for var i := 0 to 2 do
+    begin
+    try
+      self.towers[i].GetDiscs.peek.DragMode:=dmAutomatic;
+    except end;
+    end;
+  end;
+
+
+
+ procedure TGameBoard.BoardCreate(custom:integer);
+    begin
+    self.gameStatus:=True;
+    TTower.DefineVars(StepsLabel,memo1,0,self,true);
+
+    gameboard.BestTimeLabel.Caption:= gameboard.bestLevels[inttostr(self.getcurrLevel)];
+    gameboard.BestStepsLabel.Caption:= gameboard.beststeps[inttostr(self.getcurrLevel)] ;
+
+    maxtimelabel.caption:=self.getTime();
+    timer1.Enabled:=true;
+    levellabel.Caption:=inttostr(self.getcurrLevel());
+
+    if self.towers <> nil then exit;
+
+    SetLength(self.towers, 3);
+    for var i := 0 to 2 do
+    begin
+      self.towers[i] := TTower.Create(self);
+      self.towers[i].OnDragOver:=self.towers[i].TowerDragOver;
+      self.towers[i].OnDragDrop:=self.towers[i].TowerDragDrop;
+
+      self.towers[i].DragMode:= dmAutomatic;
+      //self.towers[i].DragKind := dkDrag;
+      //self.towers[i].DragKind := dkDock;
+    end;
+    self.towers[0].Init(self, 'tower0', 15, 185, 250, 350,0);
+    self.towers[1].Init(self, 'tower1', 110 +  200, 185, 250, 350,1);
+    self.towers[2].Init(self, 'tower2' , 150 + 465, 185, 250, 350,2);
+
+    TTower.FillFirstTower(self.towers[1],self.getcurrLevel(),self);
+ end;
+
+procedure TGameBoard.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+self.SaveSettingsToFile(1);
+end;
+
+procedure TGameBoard.FormCreate(Sender: TObject);
+begin
+  filepath:=ExtractFilePath(Application.ExeName) + 'assets\';
+  self.settingsFile:= filepath+'hanoitowers.ini';
+
+  self.bestLevels := TDictionary<string, string>.Create();
+  self.BestSteps := TDictionary<string, string>.Create();
+
+  if not FileExists(self.settingsFile) then
+  begin
+    var f:TextFile;
+    AssignFile(f, settingsFile);
+    Rewrite(f);
+    CloseFile(f);
+    self.SaveSettingsToFile(0);
+  end;
+  self.LoadSettingsFromFile();
+
+  self.setcurrLevel(2);
+  //self.BoardCreate(0);
+
+
+end;
+
+procedure TGameBoard.FormShow(Sender: TObject);
+begin
+
+    self.BoardCreate(0);
+end;
+
+procedure TGameBoard.ReloadButtonClick(Sender: TObject);
+begin
+  self.Reset();
+  self.BoardCreate(0);
+end;
+
+procedure TGameBoard.Reset();
+begin
+    //reset
+  if self.towers<>nil then
+      for var i := 0 to 2 do
+      begin
+      for var j := 0 to self.towers[i].GetDiscs().count-1 do
+        self.towers[i].PopDisc().Free ;
+      self.towers[i].free;
+      end;
+  self.towers := nil;
+  StepsLabel.caption:='0';
+  //memo1.Lines.Clear;
+
+  timelabel.caption:='0:00';
+end;
+
+procedure TGameBoard.Timer1Timer(Sender: TObject);
+begin
+    var min:integer:=strtoint(SplitString(TimeLabel.caption,':')[0]);
+    var sec:integer:=strtoint(SplitString(TimeLabel.caption,':')[1]);
+    
+    sec:=sec+1;
+    if sec=60 then
+    begin
+      min:=min+1;
+      sec:=0;
+    end;
+    if Format('%d:%d',[min,sec])= self.MaxTimeLabel.Caption then
+    begin
+      self.BlockGame();
+      showmessage('Время вышло!');
+    end
+    else
+    begin
+    TimeLabel.caption:=format('%d:%d',[min,sec]);
+    if sec<10 then TimeLabel.caption:=format('%d:0%d',[min,sec]);
+
+    end;
+
+end;
+
+procedure TGameBoard.MainMenuButtonClick(Sender: TObject);
+  var
+  buttonSelected : Integer;
+begin
+  self.BlockGame();
+  // Show a confirmation dialog
+  buttonSelected := MessageDlg('Вы действительно желаете выйти в меню?',mtCustom, mbOKCancel, 0);
+
+  // Show the button type selected
+  if buttonSelected = mrOK  then
+  begin
+    self.BlockGame();
+    self.SaveSettingsToFile(1);
+    try GameBoard.Reset(); except end;
+    self.Close();
+  end
+  else self.unblockGame();
+
+end;
+
+procedure TGameBoard.Memo1Change(Sender: TObject);
+begin
+  if memo1.Lines[memo1.Lines.Count-1].startswith('level passed') then
+  begin
+    var besttime:string:=self.bestLevels[inttostr(self.getcurrLevel)];
+    var currtime:string:=timelabel.Caption;
+
+    if besttime='0:00' then  self.bestLevels[inttostr(self.getcurrLevel)]:=currtime;
+
+    if strtoint(splitstring(currtime,':')[0]) < strtoint(splitstring(besttime,':')[0]) then
+        self.bestLevels[inttostr(self.getcurrLevel)]:=currtime
+    else if (strtoint(splitstring(currtime,':')[0]) = strtoint(splitstring(besttime,':')[0])) then
+         if strtoint(splitstring(currtime,':')[1]) < strtoint(splitstring(besttime,':')[1]) then
+             self.bestLevels[inttostr(self.getcurrLevel)]:=currtime;
+
+    var beststeps:string := self.beststeps[inttostr(self.getcurrLevel)];
+    var currsteps:string := self.StepsLabel.Caption;
+
+    if beststeps='0' then  self.beststeps[inttostr(self.getcurrLevel)]:=currsteps;
+
+    if strtoint(currsteps) < strtoint(beststeps) then
+        self.beststeps[inttostr(self.getcurrLevel)]:=currsteps;
+
+      self.SaveSettingsToFile(1);
+      self.BlockGame()
+  end
+
+  else if memo1.Lines[memo1.Lines.Count-1] = 'next level' then self.nextLevel();
+
+
+end;
+
+end.

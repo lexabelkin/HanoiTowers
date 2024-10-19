@@ -1,0 +1,21 @@
+program Project1;
+
+uses
+  Vcl.Forms,
+  Unit1 in 'Unit1.pas' {Form1},
+  extern in 'extern.pas',
+  discinf in 'discinf.pas',
+  Boardinf in 'Boardinf.pas' {SandBoard},
+  TowerClass in 'TowerClass.pas',
+  GameUnit in 'GameUnit.pas' {GameForm};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TSandBoard, SandBoard);
+  Application.CreateForm(TGameForm, GameForm);
+  Application.Run;
+end.

@@ -1,0 +1,22 @@
+program HanoiTowers;
+
+uses
+  Vcl.Forms,
+  MainUnit in 'MainUnit.pas' {MainMenu},
+  extern in 'extern.pas',
+  discinf in 'discinf.pas',
+  Boardinf in 'Boardinf.pas' {SandBoard},
+  TowerClass in 'TowerClass.pas',
+  GameUnit in 'GameUnit.pas' {GameBoard},
+  TowerImageClass in 'TowerImageClass.pas';
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.MainFormOnTaskbar := True;
+  Application.CreateForm(TMainMenu, MainMenu);
+  Application.CreateForm(TSandBoard, SandBoard);
+  Application.CreateForm(TGameBoard, GameBoard);
+  Application.Run;
+end.

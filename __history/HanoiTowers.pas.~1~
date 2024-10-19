@@ -1,0 +1,85 @@
+﻿unit HanoiTowers;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
+
+type
+  TForm3 = class(TForm)
+    btnStart: TButton;
+    btnReset: TButton;
+    Label1: TLabel;
+    pnlTower1: TPanel;
+    pnlTower2: TPanel;
+    pnlTower3: TPanel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    procedure btnStartClick(Sender: TObject);
+    procedure btnResetClick(Sender: TObject);
+  private
+    { Private declarations }
+    Discs: array [1..3] of TPanel;
+    procedure MoveDisc(FromTower, ToTower: Integer);
+    procedure SolveTowers(NumDiscs, FromTower, ToTower, AuxTower: Integer);
+  public
+    { Public declarations }
+  end;
+
+var
+  HanoiForm: THanoiForm;
+
+implementation
+
+{$R *.dfm}
+
+procedure THanoiForm.btnStartClick(Sender: TObject);
+begin
+  SolveTowers(3, 1, 3, 2);
+end;
+
+procedure THanoiForm.btnResetClick(Sender: TObject);
+var
+  i: Integer;
+begin
+  for i := 1 to 3 do
+    Discs[i].Visible := False;
+  Discs[1].Visible := True;
+  Discs[1].Width := 100;
+  Discs[1].Left := pnlTower1.Left + (pnlTower1.Width - Discs[1].Width) div 2;
+  Discs[1].Top := pnlTower1.Top + pnlTower1.Height - Discs[1].Height;
+end;
+
+procedure THanoiForm.MoveDisc(FromTower, ToTower: Integer);
+var
+  DiscToMove: TPanel;
+begin
+  DiscToMove := Discs[FromTower];
+  case ToTower of
+    1: DiscToMove.Top := pnlTower1.Top + pnlTower1.Height - DiscToMove.Height;
+    2: DiscToMove.Top := pnlTower2.Top + pnlTower2.Height - DiscToMove.Height;
+    3: DiscToMove.Top := pnlTower3.Top + pnlTower3.Height - DiscToMove.Height;
+  end;
+  case ToTower of
+    1: DiscToMove.Left := pnlTower1.Left + (pnlTower1.Width - DiscToMove.Width) div 2;
+    2: DiscToMove.Left := pnlTower2.Left + (pnlTower2.Width - DiscToMove.Width) div 2;
+    3: DiscToMove.Left := pnlTower3.Left + (pnlTower3.Width - DiscToMove.Width) div 2;
+  end;
+  DiscToMove.Visible := True;
+end;
+
+procedure THanoiForm.SolveTowers(NumDiscs, FromTower, ToTower, AuxTower: Integer);
+begin
+  if NumDiscs = 1 then
+    MoveDisc(FromTower, ToTower)
+  else
+  begin
+    SolveTowers(NumDiscs - 1, FromTower, AuxTower, ToTower);
+    MoveDisc(FromTower, ToTower);
+    SolveTowers(NumDiscs - 1, AuxTower, ToTower, FromTower);
+  end;
+end;
+
+end.
